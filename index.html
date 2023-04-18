@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+</head>
+<body>
+  <div id="app">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#" @click.prevent="hideWishlist">Bookshop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <button class="btn btn-info" @click="showWishlist">display wish list</button>
+            </li>
+          </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row" v-if="!wishlistVisible">
+            <div class="col-md-4" v-for="book in books" :key="book.title">
+                <div class="card">
+                    <img class="card-img-top" :src="book.imageUrl" alt="Card image cap">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Title of Book: {{ book.name }}</h4>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <h6 class="card-subtitle mb-2 text-muted">Author: {{ book.author }}</h6>
+                                <p class="card-text mt-4"><strong>Category:</strong> {{ book.category }}</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <p :class="[book.numberOfPages < 50 ? 'less' : 'more']">{{ book.numberOfPages }}</p>
+                                <p class="card-text"><strong> quantity : </strong> {{ book.quantity }}</p>
+                                <p class="card-text"><strong>Book Price:</strong> {{ book.price }}</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <button class="btn btn-primary" :disabled="book.quantity == 0" @click="addToWishlist(book)">Add to List</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="wishlistVisible" class="mt-4">
+          <h1 v-if="wishlist.length == 0" class="text-primary text-center">Wishlist is empty</h1>
+          <div v-else class="table-responsive">
+            <table class="table">
+              <thead>
+                <th>ISBN</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Pages</th>
+                <th>Author</th>
+                <th>price</th>
+                <th>Action</th>
+              </thead>
+              <tbody>
+                <tr v-for="item in wishlist">
+                  <td>{{ item.ISBN }}</td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.category }}</td>
+                  <td>{{ item.numberOfPages }}</td>
+                  <td>{{ item.author }}</td>
+                  <td>{{ formatCurrency(item.price) }}</td>
+                  <td>
+                    <button class="btn btn-danger" @click="removeFromWishlist(item)">_</button>
+                  </td>
+                          
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+  </div>
+      <script src="./js/book.js"></script>
+      <script src="./js/vueversion3.js"></script>
+
+      <script>
+      const app = Vue.createApp({
+
+        data: () => ({
+					books,
+          wishlist: [],
+          wishlistVisible: false
+				}),
+        methods: {
+          myBook(){
+            return this.books;
+          },
+
+          addToWishlist(book) {
+            if (book.quantity > 0) {
+              book.quantity--;
+              this.wishlist.push(book);
+            }
+          },
+
+          showWishlist: function () {
+						this.wishlistVisible = true;
+					},
+          hideWishlist: function () {
+						this.wishlistVisible = false;
+					},
+          formatCurrency: value => {
+						fraction = value ? 0.01 : 0;
+						return Intl.NumberFormat('en-SA', {
+							style: 'currency',
+							currency: 'SAR'
+						}).format(value - fraction);
+					},
+          removeFromWishlist: function (book) {
+						book.quantity++;
+            this.wishlist.splice(this.wishlist.indexOf(book), 1);
+					},
+        },
+
+
+
+
+      });
+      app.mount('#app')
+      </script>
+
+
+
+
+    <!-- <script>
+        const app = Vue.createApp({
+          data() {
+            return {
+              books:books
+            }
+          },
+          methods: {
+            myBooks() {
+              return this.books;
+            }
+          }
+        });
+        
+        app.mount('#mainapp');
+        </script> -->
+        
+
+        
+</body>
+</html>
